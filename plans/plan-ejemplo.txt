@@ -1,0 +1,22 @@
+Terraform will perform the following actions:
+
+  # azurerm_resource_group.data will be updated in-place
+  ~ resource "azurerm_resource_group" "data" {
+      ~ tags     = {
+          + "cost_center" = "CC-001"
+            # (2 unchanged elements hidden)
+        }
+        # (2 unchanged attributes hidden)
+    }
+
+  # azurerm_storage_container.raw must be replaced
+-/+ resource "azurerm_storage_container" "raw" {
+      ~ id                   = "https://stdatos....blob.core.windows.net/raw"
+                               -> (known after apply)
+      + storage_account_id   = "/subscriptions/.../storageAccounts/stdatos..."
+                               # forces replacement
+      - storage_account_name = "stdatos..." -> null # forces replacement
+        name                 = "raw"
+    }
+
+Plan: 1 to add, 1 to change, 1 to destroy.

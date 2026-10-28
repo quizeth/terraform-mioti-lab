@@ -1,0 +1,36 @@
+name: terraform-pr
+on:
+  pull_request:
+    paths: ["10-plataforma-datos/**", "modules/**", "policies/**"]
+permissions:
+  id-token: write          # OIDC: sin secretos de larga duracion
+  contents: read
+jobs:
+  plan-y-gate:
+    runs-on: ubuntu-latest
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    defaults:
+      run:
+        working-directory: 10-plataforma-datos
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.5"
+          terraform_wrapper: false
+      - name: Instalar Conftest
+        run: |
+          curl -sSLO https://github.com/open-policy-agent/conftest/releases/download/v0.71.1/conftest_0.71.1_Linux_x86_64.tar.gz
+          tar xzf conftest_0.71.1_Linux_x86_64.tar.gz conftest
+          sudo mv conftest /usr/local/bin
+      - run: terraform fmt -check -recursive
+        working-directory: .
+      - run: terraform init -backend-config=envs/dev.backend.hcl
+      - run: terraform validate
+      - run: terraform plan -var-file=envs/dev.tfvars -out=tfplan
+      - run: terraform show -json tfplan > plan.json
+      - run: conftest test plan.json --policy ../policies

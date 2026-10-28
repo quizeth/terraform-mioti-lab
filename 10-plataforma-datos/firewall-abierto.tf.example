@@ -1,0 +1,7 @@
+# Solo para la demo del bloque 5. NUNCA aplicar.
+resource "azurerm_mssql_firewall_rule" "todo_internet" {
+  name             = "todo-internet"
+  server_id        = module.sql.server_id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "255.255.255.255"
+}
