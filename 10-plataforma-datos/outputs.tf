@@ -3,7 +3,7 @@ output "resource_group_name" {
 }
 
 output "sql_server_fqdn" {
-  value = azurerm_mssql_server.data.fully_qualified_domain_name
+  value = module.sql.server_fqdn
 }
 
 output "key_vault_id" {

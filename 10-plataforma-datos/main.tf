@@ -44,30 +44,6 @@ resource "random_password" "sql_admin" {
   min_numeric = 2
 }
 
-resource "azurerm_mssql_server" "data" {
-  name                         = "sql-${local.base}"
-  resource_group_name          = azurerm_resource_group.data.name
-  location                     = local.sql_location
-  version                      = "12.0"
-  administrator_login          = "sqladmin${var.unique_suffix}"
-  administrator_login_password = random_password.sql_admin.result
-  minimum_tls_version          = "1.2"
-  tags                         = local.tags
-}
-
-resource "azurerm_mssql_database" "this" {
-  for_each             = var.databases
-  name                 = "sqldb-${each.key}"
-  server_id            = azurerm_mssql_server.data.id
-  sku_name             = each.value.sku_name
-  storage_account_type = "Local"
-  tags                 = local.tags
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
 resource "azurerm_key_vault_secret" "sql_admin" {
   name         = "sql-admin-password"
   value        = random_password.sql_admin.result
@@ -78,4 +54,25 @@ resource "azurerm_key_vault_secret" "sql_admin" {
 moved {
   from = azurerm_mssql_database.main
   to   = azurerm_mssql_database.this["ventas"]
+}
+
+module "sql" {
+  source              = "../modules/sql-database"
+  name                = "sql-${local.base}"
+  resource_group_name = azurerm_resource_group.data.name
+  location            = local.sql_location
+  admin_login         = "sqladmin${var.unique_suffix}"
+  admin_password      = random_password.sql_admin.result
+  databases           = var.databases
+  tags                = local.tags
+}
+
+moved {
+  from = azurerm_mssql_server.data
+  to   = module.sql.azurerm_mssql_server.this
+}
+
+moved {
+  from = azurerm_mssql_database.this
+  to   = module.sql.azurerm_mssql_database.this
 }
