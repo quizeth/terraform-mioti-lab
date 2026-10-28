@@ -1,0 +1,4 @@
+storage_account_name = "sttfmioti<sufijo>"
+container_name       = "tfstate"
+key                  = "plataforma-datos/dev.tfstate"
+use_azuread_auth     = true

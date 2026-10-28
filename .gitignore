@@ -5,5 +5,5 @@ tfplan
 plan.json
 backups/
 terraform.tfvars
-envs/*.tfvars
-envs/*.backend.hcl
+**/envs/*.tfvars
+**/envs/*.backend.hcl
