@@ -1,0 +1,9 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+tfplan
+plan.json
+backups/
+terraform.tfvars
+envs/*.tfvars
+envs/*.backend.hcl

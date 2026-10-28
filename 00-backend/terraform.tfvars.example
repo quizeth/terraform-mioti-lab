@@ -1,0 +1,5 @@
+subscription_id = "<subscription_id>"
+unique_suffix   = "<sufijo>"
+location        = "<region>"
+owner           = "<tu-nombre>"
+cost_center     = "CC-LAB"
