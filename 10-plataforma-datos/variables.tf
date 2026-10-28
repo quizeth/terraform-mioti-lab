@@ -21,3 +21,11 @@ variable "unique_suffix" {
     error_message = "unique_suffix: 4-8 caracteres, minusculas y digitos."
   }
 }
+
+variable "databases" {
+  type = map(object({ sku_name = string }))
+  default = {
+    ventas   = { sku_name = "Basic" }
+    finanzas = { sku_name = "Basic" }
+  }
+}
